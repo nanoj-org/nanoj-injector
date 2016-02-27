@@ -18,11 +18,14 @@ package org.nanoj.injector.dynaproxy;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.nanoj.injector.aop.Interceptor;
 import org.nanoj.injector.aop.InterceptorProvider;
-import org.nanoj.injector.tools.BasicLogger;
+import org.nanoj.injector.impl.InjectorImpl;
 import org.nanoj.injector.tools.MethodInvoker;
+import org.nanoj.util.ConsoleLoggerProvider;
 
 /**
  * Generic handler used by the dynamic proxies for AOP.<br>
@@ -35,7 +38,8 @@ import org.nanoj.injector.tools.MethodInvoker;
  */
 public class GenericInvocationHandler implements InvocationHandler {
 
-	private static final BasicLogger logger = BasicLogger.getLogger(GenericInvocationHandler.class);
+//	private static final BasicLogger logger = BasicLogger.getLogger(GenericInvocationHandler.class);
+	private final static Logger logger = ConsoleLoggerProvider.getLogger(InjectorImpl.class, Level.INFO); 
 
 	private final static Interceptor[] VOID_INTERCEPTOR_ARRAY = new Interceptor[0];
     
@@ -157,7 +161,7 @@ public class GenericInvocationHandler implements InvocationHandler {
 		if ( interceptors != null ) {
 
 			//--- Before Call
-			logger.println("===== [ PROXY ] : Before call / " + componentInstance.getClass().getSimpleName() + " " + method.getName() );
+			logger.info("===== [ PROXY ] : Before call / " + componentInstance.getClass().getSimpleName() + " " + method.getName() );
 			//interceptor.beforeCall(componentInstance, method, args);
 			notifyInterceptorsBeforeCall(interceptors, method, args);
 			
@@ -172,7 +176,7 @@ public class GenericInvocationHandler implements InvocationHandler {
 			
 			if ( exception != null ) {
 				//--- Call error
-				logger.println("===== [ PROXY ] : Call error / " + componentInstance.getClass().getSimpleName() + " " + method.getName() );
+				logger.info("===== [ PROXY ] : Call error / " + componentInstance.getClass().getSimpleName() + " " + method.getName() );
 				//interceptor.onError(componentInstance, method, args, exception);
 				notifyInterceptorsOnError(interceptors, method, args, exception);
 				
@@ -181,7 +185,7 @@ public class GenericInvocationHandler implements InvocationHandler {
 			}
 			else {
 				//--- After Call
-				logger.println("===== [ PROXY ] : After call / " + componentInstance.getClass().getSimpleName() + " " + method.getName() );
+				logger.info("===== [ PROXY ] : After call / " + componentInstance.getClass().getSimpleName() + " " + method.getName() );
 				//interceptor.afterCall(componentInstance, method, args, result);
 				notifyInterceptorsAfterCall(interceptors, method, args, result);
 			}

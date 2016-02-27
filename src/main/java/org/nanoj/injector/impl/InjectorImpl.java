@@ -20,14 +20,16 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.inject.Provider;
 
 import org.nanoj.injector.Injector;
 import org.nanoj.injector.InjectorException;
 import org.nanoj.injector.aop.InterceptorProvider;
-import org.nanoj.injector.tools.BasicLogger;
 import org.nanoj.injector.tools.ClassTools;
+import org.nanoj.util.ConsoleLoggerProvider;
 
 /**
  * Injector implementation. A container managing dynamically components with basic
@@ -47,7 +49,8 @@ import org.nanoj.injector.tools.ClassTools;
  */
 public class InjectorImpl implements Injector {
 
-	private static final BasicLogger logger = BasicLogger.getLogger(InjectorImpl.class);
+	//private static final BasicLogger logger = BasicLogger.getLogger(InjectorImpl.class);
+	private final static Logger logger = ConsoleLoggerProvider.getLogger(InjectorImpl.class, Level.INFO); 
 	
 	/**
 	 * The symbolic name of the injector/container
@@ -134,7 +137,7 @@ public class InjectorImpl implements Injector {
 	 * @return the component concrete class
 	 */
 	protected <T> T getComponentInstance(Class<T> componentClass) {
-		logger.println("getInstance(" + componentClass + ")");
+		logger.info("getInstance(" + componentClass + ")");
 
 		String sClassName = componentClass.getName();
 		//--- Search an existing resolved component in the container
@@ -212,7 +215,7 @@ public class InjectorImpl implements Injector {
 		boolean b = isMonoInstanceByAnnotation(cl); // Default behavior : has a
 													// @Singleton annotation (
 													// from any package )
-		logger.println("isMonoInstance ( " + cl.getCanonicalName()
+		logger.info("isMonoInstance ( " + cl.getCanonicalName()
 				+ " ) : " + b);
 		return b;
 	}
@@ -404,7 +407,7 @@ public class InjectorImpl implements Injector {
 		{
 			// --- Is it a "boolean" field ?
 			Class<?> type = field.getType();
-			logger.println("SINGLETON found : type = " + type);
+			logger.info("SINGLETON found : type = " + type);
 			if ("boolean".equals(type.getName())) {
 				// --- Has it a "TRUE" value ?
 				boolean fieldValue = false;
