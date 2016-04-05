@@ -136,16 +136,19 @@ public class InjectorImpl implements Injector {
 	 *            the requested component class or interface
 	 * @return the component concrete class
 	 */
+	@SuppressWarnings("unchecked")
 	protected <T> T getComponentInstance(Class<T> componentClass) {
 		logger.info("getInstance(" + componentClass + ")");
 
 		String sClassName = componentClass.getName();
 		//--- Search an existing resolved component in the container
-		ComponentDefinition<?> component = componentsMap.get(sClassName);
-		if (component != null) {
+		ComponentDefinition<?> componentDefinition = componentsMap.get(sClassName);
+		if (componentDefinition != null) {
 			
 			//----- Component definition found : use it to get the component instance
-			return (T) component.getInstance();
+			//@SuppressWarnings("unchecked")
+			T instance = (T) componentDefinition.getInstance();
+			return instance;
 			
 		} else {
 			//----- Component definition not found => try to determine the component definition and store it the registry
@@ -153,23 +156,23 @@ public class InjectorImpl implements Injector {
 			//--- 1) Is there a specific implementation class for this component ?
 			Class<?> implementationClass = getImplementationClass(componentClass);
 			if (implementationClass != null) {
-				component = new ComponentDefinition(this, componentClass, implementationClass);
+				componentDefinition = new ComponentDefinition(this, componentClass, implementationClass);
 			} 
 			
 			//--- 2) Is there a specific provider for this component ?
 			Provider<T> provider = (Provider<T>) getProvider(componentClass);
 			if (provider != null) {
-				component = new ComponentDefinition(this, componentClass, provider);
+				componentDefinition = new ComponentDefinition(this, componentClass, provider);
 			} 
 			
 			//--- 3) Try to resolve the component definition from the conventions ?
 			implementationClass = getImplementationClassByConvention(componentClass);
 			if (implementationClass != null) {
-				component = new ComponentDefinition(this, componentClass, implementationClass);
+				componentDefinition = new ComponentDefinition(this, componentClass, implementationClass);
 			} 
 			
 			//--- Still no component ?
-			if ( null == component ) {
+			if ( null == componentDefinition ) {
 				if ( ClassTools.isInterfaceOrAbstract(componentClass) ) {
 					throw new InjectorException("Cannot get implementation or provider for '"
 							+ componentClass.getName() + "'");
@@ -177,15 +180,18 @@ public class InjectorImpl implements Injector {
 				else {
 					//--- Concrete class (implementation not required)
 //					component = new Component(this, componentClass, null);
-					component = new ComponentDefinition(this, componentClass);
+					componentDefinition = new ComponentDefinition(this, componentClass);
 				}
 			}
 			
 			//--- Store the component in the registry (for next time)
-			componentsMap.put(sClassName, component);
+			componentsMap.put(sClassName, componentDefinition);
 
 			//--- Use the component definition to get the instance
-			return (T) component.getInstance();
+			//return (T) component.getInstance();
+			//@SuppressWarnings("unchecked")
+			T instance = (T) componentDefinition.getInstance();
+			return instance;
 		}
 
 	}
@@ -261,7 +267,10 @@ public class InjectorImpl implements Injector {
 	
 	private <T> Provider<T> getProvider(Class<T> interfaceClass) {
 		Provider<?> provider = this.implementationProviders.get(interfaceClass);
-		return (Provider<T>) provider ;
+		//return (Provider<T>) provider ;
+		@SuppressWarnings("unchecked")
+		Provider<T> typedProvider = (Provider<T>) provider ;
+		return typedProvider ;
 	}
 
 	// private Class<?> getImplementationClass(Class<?> interfaceClass)
