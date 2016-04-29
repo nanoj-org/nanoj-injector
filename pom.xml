@@ -6,23 +6,13 @@
 	
 	<!-- ========== ARTEFACT IDENTIFICATION -->
 	<artifactId>nanoj-injector</artifactId>
-	<version>0.8.1</version>
+	<version>0.8.3</version>
 
 	<name>NanoJ injector</name>
 	<description>NanoJ dependency injection classes</description>
 	<!-- ========== END OF ARTEFACT IDENTIFICATION -->
 
-	<!-- Distribution Management for Sonatype specific plugin -->
-	<!-- 
-	<distributionManagement>
-		<snapshotRepository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</snapshotRepository>
-	</distributionManagement>
-	 -->
-	 
-	<!-- Distribution Management for the standard Maven deploy plugin (need a full distributionManagement section) -->
+	<!-- Distribution Management configuration (used by the deploy plugin) -->
 	<distributionManagement>
 		<snapshotRepository>
 			<id>ossrh</id>
@@ -160,8 +150,9 @@
 				<artifactId>pgp-maven-plugin</artifactId>
 				<version>1.1</version>
 				<configuration>
-					<secretkey>keyfile:${project.basedir}/pgp/private-key.txt</secretkey>
-					<passphrase>file:${project.basedir}/pgp/passphrase.txt</passphrase>
+					<skip>${skip-pgp}</skip>
+					<secretkey>keyfile:${secretkey-file}</secretkey>
+					<passphrase>file:${passphrase-file}</passphrase>
 				</configuration>				
 				<executions>
 					<execution>
@@ -175,21 +166,20 @@
 			<!-- 
 			Specific plugin for deployment on Sonatype Nexus server 
 			( maven-deploy-plugin replaced with nexus-staging-maven-plugin )
-			Keep the standard maven-deploy-plugin
 			 -->
-			<!-- 
-			<plugin> 
-				<groupId>org.sonatype.plugins</groupId>
-				<artifactId>nexus-staging-maven-plugin</artifactId>
-				<version>1.6.3</version>
-				<extensions>true</extensions>
-				<configuration>
-					<serverId>ossrh</serverId>
-					<nexusUrl>https://oss.sonatype.org/</nexusUrl>
-					<autoReleaseAfterClose>true</autoReleaseAfterClose>
-				</configuration>
-			</plugin>
-			 -->
+			<plugin>
+		        <groupId>org.sonatype.plugins</groupId>
+		        <artifactId>nexus-staging-maven-plugin</artifactId>
+		        <version>1.6.7</version> <!-- Last stable version / 2016 May -->
+		        <extensions>true</extensions>
+		        <configuration>
+		          <!-- The server "id" element from settings to use authentication from -->
+		          <serverId>ossrh</serverId>
+		          <!-- nexusUrl = The Base URL of Nexus instance where we want to stage -->
+		          <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+		          <description>${project.artifactId}-${project.version}</description>
+		        </configuration>
+		    </plugin>
     
 		</plugins>
 	</build>
@@ -205,7 +195,7 @@
 		<dependency>
 			<groupId>org.nanoj</groupId>
 			<artifactId>nanoj-commons</artifactId>
-			<version>0.8.1</version>
+			<version>0.8.3</version>
 		</dependency>
 		<!-- ========== END OF ARTEFACT SPECIFIC DEPENDENCIES -->
 	
